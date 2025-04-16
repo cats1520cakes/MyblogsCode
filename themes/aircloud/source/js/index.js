@@ -257,22 +257,24 @@ window.onkeydown = (e) => {
 };
 
 function getSearchContext(keyword) {
-    let result = [];
+    let results = [];
+    // 遍历 searchJson 数组
     searchJson.forEach(item => {
-        let title = item.title;
-        let content = item.content.trim().replace(/<[^>]+>/g, "").replace(/[`#\n]/g, "");
-        if (title.toLowerCase().indexOf(keyword.toLowerCase()) !== -1 || content.toLowerCase().indexOf(keyword.toLowerCase()) !== -1) {
-            result.push({
-                title: title,
-                snippet: content.substring(0, 100) + '...',
-                url: item.url
-            });
-        }
-        let snippet = content.substring(0, 100) + '...';
-        result.push( { title, snippet})
-    })
-    return result;
-}
+      // 如果不存在 title 或 content，则跳过
+      if (!item.title || !item.content) return;
+      let title = item.title;
+      // 确保 item.content 存在后再调用 trim()，否则可以设置为空字符串
+      let content = item.content ? item.content.trim().replace(/<[^>]+>/g, "").replace(/[`#\n]/g, "") : "";
+      if (title.toLowerCase().indexOf(keyword.toLowerCase()) !== -1 ||
+          content.toLowerCase().indexOf(keyword.toLowerCase()) !== -1) {
+        // 使用文章内容的前 100 个字符作为摘要
+        let snippet = content.slice(0, 100) + '...';
+        results.push({ title, snippet });
+      }
+    });
+    return results;
+  }
+  
 
 function searchFromKeyWordEnhanced(keyword = "") {
     const context = getSearchContext(keyword); // 获取当前搜索上下文
